@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>料金プラン＆お悩み診断</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Chosen Palette: Rich Gold and Cream -->
+    <!-- Application Structure Plan: 
+        1. 導入部: 「3ヶ月の法則」を強化。ホメオスタシス理論に基づき、週1回来店の重要性を「改善カーブ」グラフで可視化。
+        2. ナビゲーション: お悩み診断、痩身、小顔の3タブ構成。
+        3. お悩み診断: 前回のロジック（レーダーチャート＋提案）を維持。
+        4. 痩身プラン: グラフを廃止し、テーブル内に「お得額」カラムを追加してメリットを数値で強調。
+        5. 小顔プラン: グラフを廃止し、シンプルなテーブル表示に特化。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap');
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FCFCFA;
+            color: #4B5563;
+        }
+        h1, h2, h3, h4, .serif {
+            font-family: 'Noto Serif JP', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+        .radar-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 350px; }
+        }
+        .nav-item {
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #A1A1AA;
+            border-bottom: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .nav-item.active {
+            color: #B45309; /* amber-700 */
+            border-bottom-color: #B45309;
+        }
+        .price-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #FCD34D; /* amber-300 */
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .price-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        th, td {
+            padding: 1rem 1rem;
+            text-align: right;
+            white-space: nowrap;
+        }
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+        thead th {
+            background-color: #FFFBEB; /* amber-50 */
+            color: #854D0E; /* amber-800 */
+            font-weight: 600;
+            border-bottom: 2px solid #FDE68A;
+        }
+        tbody tr {
+            border-bottom: 1px solid #F3F4F6;
+        }
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+        tbody tr:hover {
+            background-color: #FFFCF5;
+        }
+        /* Custom Checkbox */
+        .custom-checkbox input:checked + div {
+            background-color: #B45309;
+            border-color: #B45309;
+        }
+        .custom-checkbox input:checked + div svg {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-amber-800 mb-3 tracking-wide">Premium Body Balance</h1>
+            <p class="text-lg text-gray-600 serif">お悩みに合わせた最適なプランをご提案します</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-4 mb-8 md:mb-10 border-b-2 border-gray-200 pb-1">
+            <div id="nav-diagnosis" class="nav-item active" data-page="diagnosis-page">
+                <span class="mr-2">✨</span>お悩み診断
+            </div>
+            <div id="nav-soshin" class="nav-item" data-page="soshin-page">
+                痩身オーダーメイド
+            </div>
+            <div id="nav-kogao" class="nav-item" data-page="kogao-page">
+                小顔矯正・フェイシャル
+            </div>
+        </nav>
+
+        <main class="content-wrapper">
+
+            <!-- 共通：3ヶ月理論セクション（理論強化版） -->
+            <section class="price-card p-6 md:p-8 mb-8 md:mb-10 bg-gradient-to-br from-white to-amber-50">
+                <h2 class="text-2xl font-serif font-semibold text-amber-800 mb-6 text-center">なぜ「3ヶ月」で「週1回」なのか？<br><span class="text-base font-normal text-gray-600">〜ホメオスタシス（生体恒常性）の克服〜</span></h2>
+                
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <!-- 左側：理論テキスト -->
+                    <div class="w-full lg:w-1/2 space-y-4">
+                        <div class="bg-white p-4 rounded-lg border border-amber-100 shadow-sm">
+                            <h3 class="font-bold text-amber-800 mb-2">戻ろうとする力に勝つ</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                人間の体には、変化を恐れ、元の状態に戻ろうとする<strong>「ホメオスタシス（恒常性）」</strong>という機能があります。<br>
+                                施術を受けても、期間が空いてしまうと、この機能によって体は「元の悪い状態」に戻ってしまいます。
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-amber-100 shadow-sm">
+                            <h3 class="font-bold text-amber-800 mb-2">新しい自分を「定着」させる</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                元に戻りきる前（=1週間以内）に次の刺激を与えることで、階段を登るように状態が良くなります。<br>
+                                これを<strong>3ヶ月（約12週間）</strong>続けると、脳が「良い状態」を「今の自分」として認識し直し（セットポイントの更新）、リバウンドしにくい体へと生まれ変わります。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 右側：改善イメージグラフ -->
+                    <div class="w-full lg:w-1/2">
+                        <div class="bg-white p-4 rounded-lg border border-amber-200 shadow-inner h-80">
+                            <canvas id="retentionChart"></canvas>
+                        </div>
+                        <p class="text-xs text-center text-gray-500 mt-2">
+                            ※イメージ：週1回のケア（オレンジ）は右肩上がりに改善し定着しますが、間隔が空く（グレー）と元の位置に戻ってしまいます。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- お悩み診断ページ -->
+            <div id="diagnosis-page" class="page-content space-y-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- チェックボックスエリア -->
+                    <div class="price-card p-6 md:p-8">
+                        <h3 class="text-xl font-serif font-bold text-amber-800 mb-4 border-b pb-2 border-amber-100">
+                            気になるお悩みを選択してください
+                        </h3>
+                        <div class="space-y-6" id="symptoms-container">
+                            <!-- JSで生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 診断結果エリア -->
+                    <div class="space-y-6">
+                        <div class="price-card p-6 md:p-8 bg-gradient-to-br from-amber-50 to-white relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                            <h3 class="text-xl font-serif font-bold text-amber-800 mb-2 relative z-10 text-center">あなたにおすすめのメニュー</h3>
+                            
+                            <div class="radar-chart-container relative z-10">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+
+                            <div id="recommended-menu-text" class="mt-4 p-4 bg-white/90 backdrop-blur-sm rounded-lg border border-amber-200 text-center relative z-10 shadow-sm">
+                                <p class="text-gray-500 text-sm">左記の項目にチェックを入れてください。</p>
+                            </div>
+                        </div>
+
+                        <div class="price-card p-6 md:p-8">
+                            <h3 class="text-xl font-serif font-bold text-amber-800 mb-4">推奨プラン・回数目安</h3>
+                            <div class="flex items-end gap-4 mb-2">
+                                <div class="text-sm text-gray-600">お悩みの深刻度:</div>
+                                <div class="text-3xl font-bold text-amber-600" id="worry-count">0</div>
+                                <div class="text-sm text-gray-400 pb-1">個</div>
+                            </div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-4 mb-4 overflow-hidden relative">
+                                <div id="worry-bar" class="bg-amber-500 h-4 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                                <div class="absolute top-0 bottom-0 border-l border-white/50" style="left: 20%"></div>
+                                <div class="absolute top-0 bottom-0 border-l border-white/50" style="left: 50%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-400 mb-6">
+                                <span>メンテナンス</span>
+                                <span>集中改善</span>
+                                <span>根本改革</span>
+                            </div>
+
+                            <div id="plan-recommendation" class="bg-amber-50 p-4 rounded-lg border border-amber-200 text-amber-900 text-sm leading-relaxed">
+                                チェックを入れていただくと、目安となる回数が表示されます。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 痩身プランページ -->
+            <div id="soshin-page" class="page-content hidden space-y-8">
+                <section class="price-card">
+                    <div class="p-6 md:p-8 bg-amber-50 border-b border-amber-100">
+                        <h2 class="text-2xl font-semibold text-amber-800">痩身オーダーメイドプラン 料金表</h2>
+                        <p class="text-sm text-amber-700 mt-2">
+                            回数を重ねるごとに1回あたりの料金がお得になります。<br>
+                            まずは3ヶ月（約12〜16回）を目安にご検討ください。
+                        </p>
+                    </div>
+                    <div class="table-responsive p-4 md:p-8">
+                        <table class="w-full min-w-max text-sm md:text-base">
+                            <thead>
+                                <tr>
+                                    <th>回数</th>
+                                    <th>コース料金 (税込)</th>
+                                    <th>1回あたり (税込)</th>
+                                    <th class="bg-red-50 text-red-800 border-b-red-200">これだけお得！</th>
+                                </tr>
+                            </thead>
+                            <tbody id="soshin-table-body">
+                                <!-- JSで生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 小顔・フェイシャルプランページ -->
+            <div id="kogao-page" class="page-content hidden space-y-8">
+                <section class="price-card">
+                    <div class="p-6 md:p-8 bg-amber-50 border-b border-amber-100">
+                        <h2 class="text-2xl font-semibold text-amber-800">小顔矯正 回数券</h2>
+                        <div class="mt-2 inline-block bg-white text-amber-800 border border-amber-300 font-medium py-1 px-3 rounded-full text-xs md:text-sm">
+                            特典: 45,000円(税込)以上のご契約でオプション1ヶ月無料！
+                        </div>
+                    </div>
+                    <div class="table-responsive p-4 md:p-8">
+                        <table class="w-full min-w-max text-sm md:text-base">
+                            <thead>
+                                <tr>
+                                    <th>回数</th>
+                                    <th>コース料金 (税込)</th>
+                                    <th>1回あたり (税込)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kogao-table-body">
+                                <!-- JSで生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <section class="price-card p-6 md:p-8">
+                        <h2 class="text-xl font-semibold text-amber-800 mb-4 border-b border-gray-100 pb-2">小顔矯正専用 オプション</h2>
+                        <ul class="space-y-3 text-gray-800 text-sm">
+                            <li class="flex justify-between border-b border-gray-50 pb-2"><span>骨盤矯正</span> <span class="font-medium">6,000円</span></li>
+                            <li class="flex justify-between border-b border-gray-50 pb-2"><span>ハイパーナイフ/フォースカッター</span> <span class="font-medium">6,000円</span></li>
+                            <li class="flex justify-between border-b border-gray-50 pb-2"><span>デコルテマッサージ</span> <span class="font-medium">3,000円</span></li>
+                            <li class="flex justify-between border-b border-gray-50 pb-2"><span>ヘッドマッサージ</span> <span class="font-medium">3,000円</span></li>
+                            <li class="flex justify-between pt-1"><span>クレンジング + 肌質パック</span> <span class="font-medium">4,000円</span></li>
+                        </ul>
+                    </section>
+                    <section class="price-card p-6 md:p-8">
+                        <h2 class="text-xl font-semibold text-amber-800 mb-4 border-b border-gray-100 pb-2">メンテナンスプラン</h2>
+                        <p class="text-xs text-gray-500 mb-3">※6回以上の回数券をご契約の方限定</p>
+                        <div class="table-responsive border border-amber-100 rounded-lg overflow-hidden">
+                            <table class="w-full text-sm">
+                                <thead class="bg-amber-50 text-amber-900">
+                                    <tr><th class="text-left p-2 font-medium">頻度</th><th class="text-right p-2 font-medium">通常</th><th class="text-right p-2 font-medium">OPセット</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="p-3 border-b border-gray-100">月1回</td><td class="text-right p-3 border-b border-gray-100">8,000円</td><td class="text-right p-3 border-b border-gray-100 text-amber-700 font-bold">13,500円</td></tr>
+                                    <tr><td class="p-3 border-b border-gray-100">月2回</td><td class="text-right p-3 border-b border-gray-100">15,500円</td><td class="text-right p-3 border-b border-gray-100 text-amber-700 font-bold">25,500円</td></tr>
+                                    <tr><td class="p-3">月3回</td><td class="text-right p-3">21,900円</td><td class="text-right p-3 text-amber-700 font-bold">35,400円</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            /* ------------------------------------------------
+               Data Definitions
+            ------------------------------------------------ */
+            const symptomsData = {
+                "小顔矯正": [
+                    "小顔になりたい", "左右差/歪みがある", "顔がむくむ/むくみが取れない", "エラが張っている",
+                    "顔が大きく見える", "二重アゴが気になる", "くいしばり/噛みしめのクセがある", "たるみ",
+                    "ほうれい線", "猫背/巻き方", "首コリ/ストレートネック", "眼精疲労",
+                    "疲れが取れにくい/だるい", "頭痛", "寝起きが悪い"
+                ],
+                "肌質ケアフェイシャル": [
+                    "肌がカサつく/乾燥している", "化粧のノリが悪い", "肌荒れしやすい", "スキンケアしても潤いが続かない",
+                    "刺激で赤み、かゆみが出やすい", "生理やストレスで肌が不安定になりやすい", "マスクや花粉で肌トラブルが起きやすい",
+                    "メイクが崩れやすい", "シミ・くすみ・色むらが気になる", "肌のハリ弾力がなくなった", "たるみ、小じわが目立つ"
+                ],
+                "機械小顔フェイシャル": [
+                    "顔のむくみ・二重アゴ (深刻)", "頬のたるみ、ほうれい線 (深部)", "リフトアップをしたい", "首、肩こりが慢性的にある",
+                    "頭が重い/首が詰まる感じある", "血色が悪い", "顔色がくすんでいる", "冷えやすい",
+                    "血流やリンパの滞りを感じる", "肩首が詰まると頭痛やめまいがでる", "ストレス・緊張が抜けにくい",
+                    "フェイシャルだけでなく全身の巡りを整えたい", "自分を労わる時間がほしい"
+                ],
+                "ホワイトスノーピール": [
+                    "毛穴のざらつき、ごわつき、詰まり、開き", "くすんで暗くみえる", "肌がザラザラする、角質が厚い",
+                    "しみ、そばかすが気になる", "ニキビ跡の赤み、色素沈着", "ハリ、弾力の低下を感じる",
+                    "肌の再生力が落ちたと感じる", "季節の変わり目に肌荒れしやすい", "ファンデーションでいつも隠している",
+                    "疲れ顔、老け顔と言われる", "顔の輪郭がぼやけてきた", "ほうれい線/マリオネットライン"
+                ]
+            };
+
+            const soshinData = [
+                { count: 192, total: 792000, per: 4125 }, { count: 144, total: 720000, per: 5000 },
+                { count: 96, total: 546000, per: 5688 }, { count: 64, total: 384000, per: 6000 },
+                { count: 48, total: 297000, per: 6188 }, { count: 32, total: 204000, per: 6375 },
+                { count: 16, total: 104000, per: 6500 }, { count: 1, total: 8800, per: 8800 }
+            ];
+            const soshinBasePrice = 8800; // 定価
+
+            const kogaoData = [
+                { count: 24, total: 168000, per: 7000 }, { count: 12, total: 90000, per: 7500 },
+                { count: 6, total: 48000, per: 8000 }, { count: 3, total: 25500, per: 8500 },
+                { count: 1, total: 10000, per: 10000 }
+            ];
+
+            /* ------------------------------------------------
+               Retention Theory Chart (3-Month Rule)
+            ------------------------------------------------ */
+            function initRetentionChart() {
+                const ctx = document.getElementById('retentionChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Start', '1ヶ月', '2ヶ月', '3ヶ月(定着)', '4ヶ月'],
+                        datasets: [
+                            {
+                                label: '理想の改善カーブ (週1回)',
+                                data: [20, 45, 70, 90, 95], // 階段状に上がるイメージ
+                                borderColor: '#B45309', // Amber 700
+                                backgroundColor: 'rgba(180, 83, 9, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: '自己流・不定期 (月1回)',
+                                data: [20, 25, 25, 30, 30], // 上がっては戻るイメージ
+                                borderColor: '#9CA3AF', // Gray 400
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                tension: 0.4,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                title: { display: true, text: '身体の状態 / 効果' },
+                                min: 0,
+                                max: 100,
+                                ticks: { display: false } // 数値は抽象的なので隠す
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+            initRetentionChart();
+
+
+            /* ------------------------------------------------
+               Table Population (With Discount Logic)
+            ------------------------------------------------ */
+            function formatCurrency(num) {
+                return num.toLocaleString('ja-JP', { style: 'currency', currency: 'JPY' });
+            }
+
+            // 痩身用テーブル生成（お得額計算あり）
+            const soshinTableBody = document.getElementById('soshin-table-body');
+            soshinTableBody.innerHTML = '';
+            soshinData.forEach(item => {
+                const regularTotal = soshinBasePrice * item.count;
+                const discount = regularTotal - item.total;
+                let discountText = '-';
+                let rowClass = '';
+                
+                if (discount > 0) {
+                    discountText = `<span class="font-bold text-red-600">${formatCurrency(discount)} OFF</span>`;
+                    // 割引率などを計算して強調しても良い
+                } else {
+                    discountText = '<span class="text-gray-400">定価</span>';
+                }
+
+                // おすすめ行（16回〜48回あたり）を少し目立たせる場合
+                if(item.count === 16 || item.count === 48) {
+                    rowClass = 'bg-amber-50/50';
+                }
+
+                const row = `
+                    <tr class="${rowClass} transition hover:bg-amber-50">
+                        <td class="font-medium text-gray-800">${item.count}回</td>
+                        <td class="font-medium">${formatCurrency(item.total)}</td>
+                        <td class="font-bold text-amber-700">${formatCurrency(item.per)}</td>
+                        <td class="bg-red-50/30 text-right">${discountText}</td>
+                    </tr>
+                `;
+                soshinTableBody.innerHTML += row;
+            });
+
+            // 小顔用テーブル生成（シンプル）
+            const kogaoTableBody = document.getElementById('kogao-table-body');
+            kogaoTableBody.innerHTML = '';
+            kogaoData.forEach(item => {
+                const row = `
+                    <tr class="transition hover:bg-amber-50">
+                        <td class="font-medium text-gray-800">${item.count}回</td>
+                        <td class="font-medium">${formatCurrency(item.total)}</td>
+                        <td class="font-bold text-amber-700">${formatCurrency(item.per)}</td>
+                    </tr>
+                `;
+                kogaoTableBody.innerHTML += row;
+            });
+
+
+            /* ------------------------------------------------
+               Diagnosis Logic (Preserved)
+            ------------------------------------------------ */
+            const symptomsContainer = document.getElementById('symptoms-container');
+            const menuNames = Object.keys(symptomsData);
+            let userScores = { "小顔矯正": 0, "肌質ケアフェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
+            let totalChecks = 0;
+
+            menuNames.forEach((category, index) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'border-l-4 border-amber-200 pl-4';
+                
+                const title = document.createElement('h4');
+                title.className = 'font-bold text-gray-700 mb-2';
+                const displayTitles = ["骨格・輪郭・歪み", "肌の乾燥・バリア機能", "深部の凝り・巡り・むくみ", "毛穴・角質・肌再生"];
+                title.textContent = displayTitles[index];
+                groupDiv.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-2';
+
+                symptomsData[category].forEach(symptom => {
+                    const label = document.createElement('label');
+                    label.className = 'custom-checkbox flex items-center cursor-pointer space-x-2 p-2 hover:bg-gray-50 rounded transition';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.className = 'hidden';
+                    input.dataset.category = category;
+                    input.addEventListener('change', updateDiagnosis);
+
+                    const box = document.createElement('div');
+                    box.className = 'w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center transition-colors bg-white shrink-0';
+                    box.innerHTML = `<svg class="w-3 h-3 text-white hidden pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+
+                    const text = document.createElement('span');
+                    text.className = 'text-sm text-gray-600';
+                    text.textContent = symptom;
+
+                    label.appendChild(input);
+                    label.appendChild(box);
+                    label.appendChild(text);
+                    grid.appendChild(label);
+                });
+
+                groupDiv.appendChild(grid);
+                symptomsContainer.appendChild(groupDiv);
+            });
+
+            let radarChart;
+            function initRadarChart() {
+                const ctx = document.getElementById('radarChart').getContext('2d');
+                radarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ["小顔矯正", "肌質ケア", "マシン小顔", "ホワイトスノーピール"],
+                        datasets: [{
+                            label: 'あなたのお悩み傾向',
+                            data: [0, 0, 0, 0],
+                            backgroundColor: 'rgba(180, 83, 9, 0.4)',
+                            borderColor: 'rgba(180, 83, 9, 1)',
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: 'rgba(180, 83, 9, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(0,0,0,0.1)' },
+                                grid: { color: 'rgba(0,0,0,0.1)' },
+                                pointLabels: {
+                                    font: { size: 12, family: "'Noto Sans JP', sans-serif", weight: 'bold' },
+                                    color: '#92400E'
+                                },
+                                ticks: { display: false, max: 10 }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            function updateDiagnosis() {
+                userScores = { "小顔矯正": 0, "肌質ケアフェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
+                totalChecks = 0;
+
+                const inputs = document.querySelectorAll('#symptoms-container input:checked');
+                inputs.forEach(input => {
+                    userScores[input.dataset.category]++;
+                    totalChecks++;
+                });
+
+                const scoreValues = Object.values(userScores);
+                const maxScore = Math.max(...scoreValues, 5);
+                radarChart.options.scales.r.max = maxScore;
+                radarChart.data.datasets[0].data = scoreValues;
+                radarChart.update();
+                updateRecommendationText(userScores, totalChecks);
+            }
+
+            function updateRecommendationText(scores, total) {
+                const textContainer = document.getElementById('recommended-menu-text');
+                const countDisplay = document.getElementById('worry-count');
+                const bar = document.getElementById('worry-bar');
+                const planText = document.getElementById('plan-recommendation');
+
+                countDisplay.textContent = total;
+                const percentage = Math.min((total / 15) * 100, 100);
+                bar.style.width = `${percentage}%`;
+                if(total < 4) bar.className = "bg-green-400 h-4 rounded-full transition-all duration-1000 ease-out";
+                else if(total < 8) bar.className = "bg-amber-400 h-4 rounded-full transition-all duration-1000 ease-out";
+                else bar.className = "bg-red-500 h-4 rounded-full transition-all duration-1000 ease-out";
+
+                if (total === 0) {
+                    textContainer.innerHTML = `<p class="text-gray-500 text-sm">気になる項目をチェックしてください。</p>`;
+                    planText.innerHTML = "チェックを入れていただくと、目安となる回数が表示されます。";
+                    return;
+                }
+
+                const maxVal = Math.max(...Object.values(scores));
+                const topCategories = Object.keys(scores).filter(key => scores[key] === maxVal);
+                let recTitle = topCategories.join(" & ");
+                let recDesc = "";
+                
+                if (topCategories.includes("小顔矯正")) {
+                    recDesc = "骨格の歪みや食いしばりが原因の可能性が高いです。土台から整える「小顔矯正」が最適です。";
+                } else if (topCategories.includes("肌質ケアフェイシャル")) {
+                    recDesc = "肌のバリア機能低下や乾燥が目立ちます。まずは「肌質ケア」で潤いと土台作りを。";
+                } else if (topCategories.includes("機械小顔フェイシャル")) {
+                    recDesc = "深部の凝りや血流不足、強いむくみがあります。機械の力で深部からほぐすケアが必要です。";
+                } else if (topCategories.includes("ホワイトスノーピール")) {
+                    recDesc = "ターンオーバーの乱れや角質肥厚が気になります。ピールケアで肌再生を促しましょう。";
+                }
+
+                textContainer.innerHTML = `
+                    <div class="font-bold text-lg text-amber-800 mb-1">おすすめ: ${recTitle}</div>
+                    <p class="text-sm text-gray-700">${recDesc}</p>
+                `;
+
+                let planHtml = "";
+                if (total <= 3) {
+                    planHtml = `
+                        <strong class="text-lg block mb-1 text-green-700">まずは「メンテナンス/トライアル」から</strong>
+                        お悩みはまだ軽度です。今のうちにケアすることで予防できます。<br>
+                        目安：<span class="font-bold text-xl">3回〜6回</span> のケアで状態をキープしましょう。
+                    `;
+                } else if (total <= 8) {
+                    planHtml = `
+                        <strong class="text-lg block mb-1 text-amber-700">「3ヶ月集中改善」がおすすめ</strong>
+                        複数のお悩みが複合しています。ホメオスタシスに打ち勝ち、体質を変える3ヶ月サイクルを活用しましょう。<br>
+                        目安：<span class="font-bold text-xl">12回券以上</span> (週1回×3ヶ月) でしっかり改善を目指すのが理想です。
+                    `;
+                } else {
+                    planHtml = `
+                        <strong class="text-lg block mb-1 text-red-700">「根本改善コース」が必要です</strong>
+                        長年の蓄積によるお悩みが多く見られます。一時的なケアではなく、根本からの立て直しが必要です。<br>
+                        目安：<span class="font-bold text-xl">24回券以上</span> でじっくりと時間をかけて、マイナスをゼロに戻し、さらにプラスへ導きましょう。
+                    `;
+                }
+                planText.innerHTML = planHtml;
+            }
+
+            initRadarChart();
+
+            // Tab Switching
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageContents = document.querySelectorAll('.page-content');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    const pageId = item.getAttribute('data-page');
+                    pageContents.forEach(page => page.classList.add('hidden'));
+                    document.getElementById(pageId).classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
