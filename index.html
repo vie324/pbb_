@@ -276,7 +276,7 @@
                             <li class="flex justify-between border-b border-gray-50 pb-2"><span>ハイパーナイフ/フォースカッター</span> <span class="font-medium">6,000円</span></li>
                             <li class="flex justify-between border-b border-gray-50 pb-2"><span>デコルテマッサージ</span> <span class="font-medium">3,000円</span></li>
                             <li class="flex justify-between border-b border-gray-50 pb-2"><span>ヘッドマッサージ</span> <span class="font-medium">3,000円</span></li>
-                            <li class="flex justify-between pt-1"><span>クレンジング + 肌質パック</span> <span class="font-medium">4,000円</span></li>
+                            <li class="flex justify-between pt-1"><span>クレンジング + イフミックパック</span> <span class="font-medium">4,000円</span></li>
                         </ul>
                     </section>
                     <section class="price-card p-6 md:p-8">
@@ -312,10 +312,10 @@
                     "ほうれい線", "猫背/巻き方", "首コリ/ストレートネック", "眼精疲労",
                     "疲れが取れにくい/だるい", "頭痛", "寝起きが悪い"
                 ],
-                "肌質ケアフェイシャル": [
-                    "肌がカサつく/乾燥している", "化粧のノリが悪い", "肌荒れしやすい", "スキンケアしても潤いが続かない",
-                    "刺激で赤み、かゆみが出やすい", "生理やストレスで肌が不安定になりやすい", "マスクや花粉で肌トラブルが起きやすい",
-                    "メイクが崩れやすい", "シミ・くすみ・色むらが気になる", "肌のハリ弾力がなくなった", "たるみ、小じわが目立つ"
+                "血流改善フェイシャル": [
+                    "目の疲れ・眼精疲労がある", "肌荒れしやすい", "くいしばり・コリが気になる", "肌のターンオーバーが乱れている",
+                    "顔がむくみやすい", "むくみで顔が大きく見える", "目元のクマが気になる",
+                    "フェイスラインのたるみが気になる", "ほうれい線が気になる", "肩こり・首こりがつらい"
                 ],
                 "機械小顔フェイシャル": [
                     "顔のむくみ・二重アゴ (深刻)", "頬のたるみ、ほうれい線 (深部)", "リフトアップをしたい", "首、肩こりが慢性的にある",
@@ -464,7 +464,7 @@
             ------------------------------------------------ */
             const symptomsContainer = document.getElementById('symptoms-container');
             const menuNames = Object.keys(symptomsData);
-            let userScores = { "小顔矯正": 0, "肌質ケアフェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
+            let userScores = { "小顔矯正": 0, "血流改善フェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
             let totalChecks = 0;
 
             menuNames.forEach((category, index) => {
@@ -473,7 +473,7 @@
                 
                 const title = document.createElement('h4');
                 title.className = 'font-bold text-gray-700 mb-2';
-                const displayTitles = ["骨格・輪郭・歪み", "肌の乾燥・バリア機能", "深部の凝り・巡り・むくみ", "毛穴・角質・肌再生"];
+                const displayTitles = ["骨格・輪郭・歪み", "血行・巡り・コリ", "深部の凝り・巡り・むくみ", "毛穴・角質・肌再生"];
                 title.textContent = displayTitles[index];
                 groupDiv.appendChild(title);
 
@@ -514,7 +514,7 @@
                 radarChart = new Chart(ctx, {
                     type: 'radar',
                     data: {
-                        labels: ["小顔矯正", "肌質ケア", "マシン小顔", "ホワイトスノーピール"],
+                        labels: ["小顔矯正", "血流改善", "マシン小顔", "ホワイトスノーピール"],
                         datasets: [{
                             label: 'あなたのお悩み傾向',
                             data: [0, 0, 0, 0],
@@ -545,7 +545,7 @@
             }
 
             function updateDiagnosis() {
-                userScores = { "小顔矯正": 0, "肌質ケアフェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
+                userScores = { "小顔矯正": 0, "血流改善フェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
                 totalChecks = 0;
 
                 const inputs = document.querySelectorAll('#symptoms-container input:checked');
@@ -588,8 +588,8 @@
                 
                 if (topCategories.includes("小顔矯正")) {
                     recDesc = "骨格の歪みや食いしばりが原因の可能性が高いです。土台から整える「小顔矯正」が最適です。";
-                } else if (topCategories.includes("肌質ケアフェイシャル")) {
-                    recDesc = "肌のバリア機能低下や乾燥が目立ちます。まずは「肌質ケア」で潤いと土台作りを。";
+                } else if (topCategories.includes("血流改善フェイシャル")) {
+                    recDesc = "血行不良やコリが目立ちます。イフミッククリームで巡りを整え、肌と体のコンディションを改善する「血流改善フェイシャル」がおすすめです。";
                 } else if (topCategories.includes("機械小顔フェイシャル")) {
                     recDesc = "深部の凝りや血流不足、強いむくみがあります。機械の力で深部からほぐすケアが必要です。";
                 } else if (topCategories.includes("ホワイトスノーピール")) {
