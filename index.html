@@ -213,6 +213,69 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- キャンペーンボタン -->
+                <div class="mt-8 text-center">
+                    <button id="campaign-toggle-btn" onclick="document.getElementById('campaign-section').classList.toggle('hidden')" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold text-lg rounded-full shadow-lg hover:from-red-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 animate-pulse">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+                        通院中のお客様限定キャンペーン
+                    </button>
+                </div>
+
+                <!-- キャンペーン内容 -->
+                <div id="campaign-section" class="hidden mt-6">
+                    <div class="bg-gradient-to-br from-red-50 via-pink-50 to-amber-50 rounded-2xl border-2 border-red-200 shadow-xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-red-500 to-pink-500 px-6 py-4">
+                            <h3 class="text-white text-xl font-bold text-center">通ってくださっているお客様限定</h3>
+                            <p class="text-pink-100 text-sm text-center mt-1">特別価格キャンペーン</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <!-- 美容鍼キャンペーン -->
+                            <div class="bg-white rounded-xl p-5 shadow-md border border-pink-100">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">SPECIAL</span>
+                                    <h4 class="font-bold text-lg text-gray-800">美容鍼</h4>
+                                </div>
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    <p>通常価格: <span class="font-bold">7,900円</span></p>
+                                    <p>初回は初診料込みで <span class="line-through text-gray-400">9,900円</span></p>
+                                </div>
+                                <div class="mt-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg p-4 text-center">
+                                    <p class="text-pink-100 text-xs mb-1">キャンペーン価格</p>
+                                    <div class="flex items-center justify-center gap-3">
+                                        <span class="text-white/70 line-through text-lg">9,900円</span>
+                                        <svg class="w-6 h-6 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                        <span class="text-white font-black text-3xl">2,980<span class="text-base font-bold">円</span></span>
+                                    </div>
+                                    <p class="text-yellow-200 text-xs font-bold mt-1">6,920円もお得!</p>
+                                </div>
+                            </div>
+
+                            <!-- 360°美顔小顔矯正キャンペーン -->
+                            <div class="bg-white rounded-xl p-5 shadow-md border border-pink-100">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">SPECIAL</span>
+                                    <h4 class="font-bold text-lg text-gray-800">360°美顔小顔矯正</h4>
+                                </div>
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    <p>通常価格: <span class="font-bold">8,500円</span></p>
+                                    <p>体験料金 <span class="line-through text-gray-400">2,980円</span></p>
+                                </div>
+                                <div class="mt-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg p-4 text-center">
+                                    <p class="text-pink-100 text-xs mb-1">キャンペーン価格</p>
+                                    <div class="flex items-center justify-center gap-3">
+                                        <span class="text-white/70 line-through text-lg">2,980円</span>
+                                        <svg class="w-6 h-6 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                        <span class="text-white font-black text-3xl">1,980<span class="text-base font-bold">円</span></span>
+                                    </div>
+                                    <p class="text-yellow-200 text-xs font-bold mt-1">1,000円もお得!</p>
+                                </div>
+                            </div>
+
+                            <p class="text-center text-xs text-gray-400 mt-4">※ 通院中のお客様限定の特別キャンペーンです</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 痩身プランページ -->
@@ -328,6 +391,13 @@
                     "しみ、そばかすが気になる", "ニキビ跡の赤み、色素沈着", "ハリ、弾力の低下を感じる",
                     "肌の再生力が落ちたと感じる", "季節の変わり目に肌荒れしやすい", "ファンデーションでいつも隠している",
                     "疲れ顔、老け顔と言われる", "顔の輪郭がぼやけてきた", "ほうれい線/マリオネットライン"
+                ],
+                "美容鍼": [
+                    "顔のむくみ・二重アゴ", "頬のたるみ、ほうれい線", "リフトアップをしたい",
+                    "くすんでいる/顔色が悪い", "目の下のクマ", "化粧のノリが悪い",
+                    "根本的に肌質を変えたい", "しみ、そばかすが気になる", "ハリ、弾力の低下を感じる",
+                    "肌の再生力が落ちたと感じる", "ほうれい線/マリオネットラインが気になる", "肌の透明感が欲しい",
+                    "頭皮が固い", "肌荒れ"
                 ]
             };
 
@@ -464,7 +534,7 @@
             ------------------------------------------------ */
             const symptomsContainer = document.getElementById('symptoms-container');
             const menuNames = Object.keys(symptomsData);
-            let userScores = { "小顔矯正": 0, "血流改善フェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
+            let userScores = { "小顔矯正": 0, "血流改善フェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0, "美容鍼": 0 };
             let totalChecks = 0;
 
             menuNames.forEach((category, index) => {
@@ -473,7 +543,7 @@
                 
                 const title = document.createElement('h4');
                 title.className = 'font-bold text-gray-700 mb-2';
-                const displayTitles = ["骨格・輪郭・歪み", "血行・巡り・コリ", "深部の凝り・巡り・むくみ", "毛穴・角質・肌再生"];
+                const displayTitles = ["骨格・輪郭・歪み", "血行・巡り・コリ", "深部の凝り・巡り・むくみ", "毛穴・角質・肌再生", "美容鍼・肌質改善"];
                 title.textContent = displayTitles[index];
                 groupDiv.appendChild(title);
 
@@ -514,10 +584,10 @@
                 radarChart = new Chart(ctx, {
                     type: 'radar',
                     data: {
-                        labels: ["小顔矯正", "血流改善", "マシン小顔", "ホワイトスノーピール"],
+                        labels: ["小顔矯正", "血流改善", "マシン小顔", "ホワイトスノーピール", "美容鍼"],
                         datasets: [{
                             label: 'あなたのお悩み傾向',
-                            data: [0, 0, 0, 0],
+                            data: [0, 0, 0, 0, 0],
                             backgroundColor: 'rgba(180, 83, 9, 0.4)',
                             borderColor: 'rgba(180, 83, 9, 1)',
                             pointBackgroundColor: '#fff',
@@ -545,7 +615,7 @@
             }
 
             function updateDiagnosis() {
-                userScores = { "小顔矯正": 0, "血流改善フェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0 };
+                userScores = { "小顔矯正": 0, "血流改善フェイシャル": 0, "機械小顔フェイシャル": 0, "ホワイトスノーピール": 0, "美容鍼": 0 };
                 totalChecks = 0;
 
                 const inputs = document.querySelectorAll('#symptoms-container input:checked');
@@ -594,6 +664,8 @@
                     recDesc = "深部の凝りや血流不足、強いむくみがあります。機械の力で深部からほぐすケアが必要です。";
                 } else if (topCategories.includes("ホワイトスノーピール")) {
                     recDesc = "ターンオーバーの乱れや角質肥厚が気になります。ピールケアで肌再生を促しましょう。";
+                } else if (topCategories.includes("美容鍼")) {
+                    recDesc = "たるみ・くすみ・肌質の低下が気になります。美容鍼で内側から血流を促進し、肌本来の再生力を引き出しましょう。";
                 }
 
                 textContainer.innerHTML = `
